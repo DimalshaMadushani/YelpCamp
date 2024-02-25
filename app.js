@@ -1,10 +1,25 @@
 const express = require('express')
-const app = express();
 const path = require('path');
 const mongoose = require('mongoose');
+const ejsMate = require('ejs-mate')
 //to ovveride the patch , delete requests
 const methodOverride = require('method-override');
 const Campground = require('./models/campgrounds')
+
+const app = express();
+
+app.engine('ejs',ejsMate)
+app.set('view engine','ejs');
+app.set('views',path.join(__dirname,'views'));
+
+
+
+//middleware
+//this is for parsing the body of the request
+app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
+app.use(express.json())// for parsing application/json
+//_method is the name of the query string
+app.use(methodOverride('_method'))
 
 
 //connect to databse
@@ -16,18 +31,6 @@ mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp')
         console.log("Mongo Database connection error !!!")
         console.log(err)
     })
-
-//to ovveride the patch , delete requests
-// const methodOverride = require('method-override');
-//middleware
-//this is for parsing the body of the request
-app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
-app.use(express.json())// for parsing application/json
-//_method is the name of the query string
-app.use(methodOverride('_method'))
-
-app.set('views',path.join(__dirname,'views'));
-app.set('view engine','ejs');
 
 app.get('/',(req,res) => {
     // res.send("Helloo!")
@@ -47,10 +50,19 @@ app.get('/campgrounds/new',(req,res) => {
 
 app.post('/campgrounds',async (req,res) => {
     const {title,location} = req.body
+    console.log(title,location)
     const campground = await Campground.create({title,location})
     // await Campground.create(req.body.campground)
    res.redirect(`/campgrounds/${campground.id}`)
 })
+
+// app.put('/campgrounds', async (req, res) => {
+//     const campgroundData = req.body.campground; // This should contain the title and location
+//     console.log(campgroundData.title, campgroundData.location); // Check if the data is there
+//     const campground = await Campground.create(campgroundData); // Pass the whole object
+//     res.redirect(`/campgrounds/${campground._id}`); // Make sure to use _id, not id
+// });
+
 
 // show one campground details 
 app.get('/campgrounds/:id' , async(req,res) => {
@@ -84,6 +96,6 @@ app.delete('/campgrounds/:id',async (req,res) => {
 //     const camp = await Campground.create({title:'My Backyard',description:'Cheap Camping'})
 //     res.send(camp)
 // })
-app.listen(3000, () => {
-    console.log("Listening on port 3000..")
+app.listen(3001, () => {
+    console.log("Listening on port 3001..")
 })
