@@ -1,27 +1,8 @@
-
-<% layout('/layouts/boilerplate') %>
-    <h1>Welcome to <%= campground.title %></h1>
-    <p>Here is the location : <%= campground.location %></p>
-    <h2><%= campground.location %></h2>
-    <img src="<%= campground.image %>" alt="">
-    <p><%= campground.description %></p>
-
-    <form
-      method="POST"
-      action="/campgrounds/<%=campground._id %>?_method=DELETE"
-    >
-      <button type="submit">Delete</button>
-    </form>
-    <div><a href="/campgrounds/<%= campground.id %>/edit">Edit</a></div>
-    <footer>
-      <a href="/campgrounds"> All camgrounds</a>
-    </footer>
-
-  <!-- <% layout('layouts/boilerplate')%>
+<% layout('layouts/boilerplate')%>
 
 <div class="row">
     <div class="col-6 offset-3">
-        <div class="mb-3 card">
+        <div class="card mb-3">
             <img src="<%= campground.image%>" class="card-img-top" alt="...">
             <div class="card-body">
                 <h5 class="card-title"><%= campground.title%></h5>
@@ -32,8 +13,8 @@
                 <li class="list-group-item">$<%= campground.price%>/night</li>
             </ul>
             <div class="card-body">
-                <a class="card-link btn btn-info" href="/campgrounds/<%=campground.id%>/edit">Edit</a>
-                <form class="d-inline" action="/campgrounds/<%=campground.id%>?_method=DELETE" method="POST">
+                <a class="card-link btn btn-info" href="/campgrounds/<%=campground._id%>/edit">Edit</a>
+                <form class="d-inline" action="/campgrounds/<%=campground._id%>?_method=DELETE" method="POST">
                     <button class="btn btn-danger">Delete</button>
                 </form>
             </div>
@@ -42,4 +23,4 @@
             </div>
         </div>
     </div>
-</div> -->
+</div>
