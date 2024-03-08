@@ -3,6 +3,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
 const Joi = require('joi');
+const {campgroundSchema} = require('./schemas.js')
 
 const catchAsync = require('./utils/catchAsync')
 const ExpressError = require('./utils/ExpressError')
@@ -42,6 +43,18 @@ app.set('views', path.join(__dirname, 'views'))
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 
+//joi validation middleware, only for post and put routes
+const validateCampground = (req,res,next) => {
+    //validating the request.body
+    const {error} = campgroundSchema.validate(req.body);
+    if(error) {
+        const msg = error.details.map(el => el.message).join(',')
+        throw new ExpressError(msg,400)
+    }
+    else{
+        next()
+    }
+}
 
 app.get('/', (req, res) => {
     res.render('home')
@@ -58,25 +71,9 @@ app.get('/campgrounds/new', (req, res) => {
     res.render('campgrounds/new');
 })
 
-app.post('/campgrounds', catchAsync(async (req, res,next) => {
+app.post('/campgrounds',validateCampground, catchAsync(async (req, res,next) => {
     // if(!req.body.campground) throw new ExpressError('Invalid campground data',400)
     //this is just a schema for joi to validate
-    const campgroundSchema = Joi.object({
-        campground : Joi.object({
-            title : Joi.string().required(),
-            price : Joi.number().required().min(0),
-            image: Joi.string().required(),
-            location: Joi.string().required()
-            
-        }).required()
-    })
-    //
-    const {error} = campgroundSchema.validate(req.body);
-    if(error) {
-        const msg = error.details.map(el => el.message).join(',')
-        throw new ExpressError(msg,400)
-    }
-    // console.log(result)
     const campground = new Campground(req.body.campground);
     await campground.save();
     res.redirect(`/campgrounds/${campground._id}`)
@@ -95,7 +92,7 @@ app.get('/campgrounds/:id/edit', async (req, res,next) => {
     res.render('campgrounds/edit', { campground });
 });
 
-app.put('/campgrounds/:id', catchAsync(async (req, res,next) => {
+app.put('/campgrounds/:id', validateCampground,catchAsync(async (req, res,next) => {
     const { id } = req.params;
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground });
     res.redirect(`/campgrounds/${campground._id}`)
