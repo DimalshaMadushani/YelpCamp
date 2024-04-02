@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
 const Joi = require('joi');
 const {campgroundSchema,reviewSchema} = require('./schemas.js')
+const session =  require('express-session')
+const flash = require('connect-flash')
 
 const catchAsync = require('./utils/catchAsync')
 const ExpressError = require('./utils/ExpressError')
@@ -38,6 +40,32 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname,'public')))
 
+const sessionConfig = {
+    //used to sign the session ID cookie. 
+    secret : 'thisshouldbeabettersecret!',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { 
+        httpOnly : true,
+        expires:  Date.now() + 1000*60*60*24*7,
+        maxAge: 1000*60*60*24*7
+    }   
+    
+}
+app.use(session(sessionConfig))
+app.use(flash())
+
+//res.locals is an object that contains response local variables scoped to the request. 
+//Variables set on res.locals are available to the view(s) rendered during that request/response cycle (if any).
+//req.flash is a function provided by the connect-flash middleware, which is used for storing and retrieving messages, 
+// typically for one-time-only messages like success or error notifications. 
+// Messages stored in flash are written to the session, and they are cleared after being displayed to the user. 
+// Here, req.flash('success') retrieves messages stored under the key 
+app.use((req,res,next) => {
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error')
+    next()
+})
 //express router middleware 
 app.use('/campgrounds',campgroundRoutes)
 
