@@ -4,6 +4,8 @@ const catchAsync = require('../utils/catchAsync')
 const ExpressError = require('../utils/ExpressError')
 const Campground = require('../models/campground');
 const {campgroundSchema} = require('../schemas.js')
+//require the middleware which is in a seperate file
+const {isLoggedIn} = require('../middleware')
 
 //joi validation middleware, only for post and put routes
 const validateCampground = (req,res,next) => {
@@ -26,11 +28,11 @@ router.get('/', catchAsync(async (req, res,next) => {
 
 
 //create a new campground
-router.get('/new', (req, res) => {
+router.get('/new', isLoggedIn, (req, res) => {
     res.render('campgrounds/new');
 })
 
-router.post('/',validateCampground, catchAsync(async (req, res,next) => {
+router.post('/',isLoggedIn,validateCampground, catchAsync(async (req, res,next) => {
     // if(!req.body.campground) throw new ExpressError('Invalid campground data',400)
     const campground = new Campground(req.body.campground);
     await campground.save();
@@ -51,7 +53,7 @@ router.get('/:id', catchAsync(async (req, res,next) => {
 
 
 //edit a campground
-router.get('/:id/edit', async (req, res,next) => {
+router.get('/:id/edit', isLoggedIn, async (req, res,next) => {
     const campground = await Campground.findById(req.params.id)
     if(!campground) {
         req.flash('error', 'Campground Not Found !')
@@ -60,7 +62,7 @@ router.get('/:id/edit', async (req, res,next) => {
     res.render('campgrounds/edit', { campground });
 });
 
-router.put('/:id', validateCampground,catchAsync(async (req, res,next) => {
+router.put('/:id', isLoggedIn,validateCampground,catchAsync(async (req, res,next) => {
     const { id } = req.params;
     const campground = await Campground.findByIdAndUpdate(id, { ...req.body.campground });
     req.flash('success', 'Succesfully updated  Campground.!')
