@@ -14,8 +14,13 @@ const methodOverride = require('method-override');
 const Campground = require('./models/campground');
 const Review = require('./models/review')
 const { title } = require('process');
+const passport = require('passport')
+const LocalStrategy = require('passport-local')
+const User = require('./models/user')
+
 const campgroundRoutes = require('./routes/campgrounds')
 const reviewRoutes = require('./routes/reviews')
+const userRoutes = require('./routes/users')
 
 //connect to database
 mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp', {
@@ -55,6 +60,14 @@ const sessionConfig = {
 app.use(session(sessionConfig))
 app.use(flash())
 
+app.use(passport.initialize())
+app.use(passport.session())
+passport.use(new LocalStrategy(User.authenticate()))
+
+passport.serializeUser(User.serializeUser())
+passport.deserializeUser(User.deserializeUser())
+
+
 //res.locals is an object that contains response local variables scoped to the request. 
 //Variables set on res.locals are available to the view(s) rendered during that request/response cycle (if any).
 //req.flash is a function provided by the connect-flash middleware, which is used for storing and retrieving messages, 
@@ -66,14 +79,24 @@ app.use((req,res,next) => {
     res.locals.error = req.flash('error')
     next()
 })
+
+// app.get('/fakeUser',async (req,res) => {
+//     const user = new User({email:'mad@gmail.com', username: 'maddd'});
+//     const newUser = await User.register(user,'cat')
+//     res.send(newUser)
+// })
+
+
 //express router middleware 
+app.use('/',userRoutes)
 app.use('/campgrounds',campgroundRoutes)
+app.use('/campgrounds/:id/reviews',reviewRoutes)
+
 
 app.get('/', (req, res) => {
     res.render('home')
 });
 
-app.use('/campgrounds/:id/reviews',reviewRoutes)
 
 //app.all is a method provided by Express that is used to handle all types of HTTP requests 
 //(GET, POST, PUT, DELETE, etc.) at a particular route. In this case, the route is specified as '*', which acts as a wildcard, matching any path.

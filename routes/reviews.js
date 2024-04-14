@@ -7,6 +7,7 @@ const Review = require('../models/review');
 const Campground = require('../models/campground');
 const {reviewSchema} = require('../schemas.js')
 
+
 const validateReview = (req,res,next) => {
     const {error} = reviewSchema.validate(req.body);
     if(error) {
