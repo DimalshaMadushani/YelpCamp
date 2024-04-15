@@ -18,6 +18,3 @@ module.exports.reviewSchema = Joi.object({
     }).required()
 })
 
-module.exports.useSchema = Joi.object({
-    
-})

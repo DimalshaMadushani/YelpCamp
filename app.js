@@ -1,4 +1,5 @@
 const express = require('express');
+const app = express();
 const path = require('path');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
@@ -36,14 +37,14 @@ mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp', {
     console.log(err)
 });
 
-const app = express();
+app.use(express.static(path.join(__dirname,'public')))
 app.engine('ejs', ejsMate)
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'))
 
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
-app.use(express.static(path.join(__dirname,'public')))
+
 
 const sessionConfig = {
     //used to sign the session ID cookie. 
@@ -75,6 +76,8 @@ passport.deserializeUser(User.deserializeUser())
 // Messages stored in flash are written to the session, and they are cleared after being displayed to the user. 
 // Here, req.flash('success') retrieves messages stored under the key 
 app.use((req,res,next) => {
+    //this is used to check if the user is authenticated or not to keep the track of the current user 
+    res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error')
     next()
