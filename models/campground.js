@@ -28,7 +28,7 @@ CampgroundSchema.post('findOneAndDelete',async function(campground) {
     if(campground.reviews.length){
         // we are gonna delete all the reviews whose id is in campground.reviews array
         const result = await Review.deleteMany({_id: {$in: campground.reviews}})
-        console.log(result)
+        // console.log(result)
     }
 
 })
