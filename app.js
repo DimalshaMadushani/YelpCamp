@@ -1,22 +1,34 @@
+// loads environment variables from a .env file only if the application is not running in a production environment.
+if(process.env.NODE_ENV  !== 'production'){
+    require('dotenv').config();
+}
+
+console.log(process.env.SECRET)
 const express = require('express');
 const app = express();
 const path = require('path');
+//Mongoose is an Object Data Modeling (ODM) library for MongoDB and Node.js. 
+//It provides a straightforward, schema-based solution to model your application data.
 const mongoose = require('mongoose');
+// ejs-mate is a package for Express.js that extends the EJS (Embedded JavaScript) templating engine.
 const ejsMate = require('ejs-mate');
-const Joi = require('joi');
-const {campgroundSchema,reviewSchema} = require('./schemas.js')
+
+// By default, express-session uses cookies to store a session identifier on the client-side. 
+// The actual session data is stored on the server-side, and the session identifier in the cookie is used to retrieve this data.
 const session =  require('express-session')
+//The connect-flash middleware is used in Express.js applications to manage flash messages. Flash messages are temporary messages used to convey information to the user, such as notifications, warnings, success messages, or errors. These messages are stored in the session and are designed to be displayed to the user only once, typically after a redirect.
 const flash = require('connect-flash')
 
-const catchAsync = require('./utils/catchAsync')
+//By extending the Error class, ExpressError allows you to create custom error objects that include a message and a status code. This is useful for more precise error handling in your application.
+//When an error occurs in your application, you can throw an ExpressError with a specific message and status code.
 const ExpressError = require('./utils/ExpressError')
 
 const methodOverride = require('method-override');
-const Campground = require('./models/campground');
-const Review = require('./models/review')
-const { title } = require('process');
+// Passport is an authentication middleware for Node.js that provides a set of plugins to handle authentication in your application.
 const passport = require('passport')
+//passport-local is a strategy for Passport.js that authenticates users using a username and password. It is called "local" because it uses the local database for authentication.
 const LocalStrategy = require('passport-local')
+// The User model is a Mongoose model that represents a user in the application.
 const User = require('./models/user')
 
 const campgroundRoutes = require('./routes/campgrounds')

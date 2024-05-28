@@ -1,3 +1,4 @@
+//defines a Mongoose schema for a Review document and then exports a Mongoose model based on this schema.
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 

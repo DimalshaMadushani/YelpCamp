@@ -1,24 +1,26 @@
 const express = require('express');
+//By using router, you create a modular and maintainable structure for your application’s routing, making it easier to scale and manage your codebase.
 const router = express.Router();
+// The campgrounds controller contains functions that define the logic for handling requests to the /campgrounds route.
 const campgrounds = require('../controllers/campgrounds')
 const catchAsync = require('../utils/catchAsync')
-const Campground = require('../models/campground');
 
 //require the middleware which is in a seperate file
 const {isLoggedIn , validateCampground , isAuthor} = require('../middleware')
-
+const multer = require('multer')
+const {storage} = require('../cloudinary')
+const upload = multer({storage})
 
 router.route('/')
-    .get( catchAsync(campgrounds.index))
-    .post(isLoggedIn,validateCampground, catchAsync(campgrounds.createCampground));
-
-
+    .get(catchAsync(campgrounds.index))
+    .post(isLoggedIn, upload.array('image'), validateCampground, catchAsync(campgrounds.createCampground));
+    
 //create a new campground
 router.get('/new', isLoggedIn, campgrounds.renderNewForm)
 
 router.route('/:id')
     .get(catchAsync(campgrounds.showCampground))
-    .put( isLoggedIn,isAuthor,validateCampground,catchAsync(campgrounds.editCampground))
+    .put( isLoggedIn,isAuthor,upload.array('image'),validateCampground,catchAsync(campgrounds.editCampground))
     .delete(isAuthor, catchAsync(campgrounds.deleteCampground));
 
 //edit a campground
