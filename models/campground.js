@@ -13,6 +13,9 @@ const ImageSchema = new Schema({
 ImageSchema.virtual('thumbnail').get(function () {
     return this.url.replace('/upload', '/upload/w_200')
 })
+
+//this option is to include virtuals in the json response, otherwise they are not included in the json response
+const opts = { toJSON: { virtuals: true } };
 const CampgroundSchema = new Schema({
     title: String,
     images: [ImageSchema],
@@ -41,7 +44,13 @@ const CampgroundSchema = new Schema({
             ref : 'Review'
         }
     ]
-});
+},opts);
+
+CampgroundSchema.virtual('properties.popUpMarkup').get(function () {
+    return `<strong><a href="/campgrounds/${this._id}">${this.title}</a></strong>
+    <p>${this.description.substring(0,20)}...</p>`
+})
+
 //setting up the query middlware for delete
 // we are passing the thing that we just deleted 'campground as an argument to the function
 CampgroundSchema.post('findOneAndDelete',async function(campground) {
