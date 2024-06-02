@@ -8,6 +8,8 @@
     zoom: 9, // starting zoom
   });
  
+  map.addControl(new mapboxgl.NavigationControl());
+
 
 // create the popup
 const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
