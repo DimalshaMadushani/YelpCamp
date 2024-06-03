@@ -11,6 +11,8 @@ const multer = require('multer')
 const {storage} = require('../cloudinary')
 const upload = multer({storage})
 
+//about post request
+//upload.array("image"): This middleware handles the uploading of multiple files (images in this case) attached to the field named image in the form. The uploaded files are processed using the storage configuration from Cloudinary.
 router.route('/')
     .get(catchAsync(campgrounds.index))
     .post(isLoggedIn, upload.array('image'), validateCampground, catchAsync(campgrounds.createCampground));

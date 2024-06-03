@@ -6,3 +6,5 @@ module.exports = func => {
         func(req,res,next).catch(next);
     }
 }
+
+// This catchAsync wrapper function can catch errors that are passed to the next function.

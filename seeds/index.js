@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const cities = require('./cities');
-const axios = require('axios');
+// const axios = require('axios');
 const { places, descriptors } = require('./seedHelpers');
 const Campground = require('../models/campground');
 
@@ -27,25 +27,26 @@ db.once("open", () => {
 
 const sample = array => array[Math.floor(Math.random() * array.length)];
 
-const getRandomImage = async () => {
-    try {
-        const response = await axios.get('https://api.unsplash.com/photos/random', {
-            params: {
-                client_id: 'PSrBaQYPCln4kqrTpE3pABs-XKOG8u9K9zNtLs10lns', // Replace with your Unsplash access key
-                // You can add more parameters here to customize the returned images
-                collections:'483251,DSpWkevZa94'
-            }
-        });
-        return response.data.urls.regular; // or whichever image size you prefer
-    } catch (error) {
-        console.error("Error fetching image from Unsplash:", error);
-    }
-};
+// const getRandomImage = async () => {
+//     try {
+//         const response = await axios.get('https://api.unsplash.com/photos/random', {
+//             params: {
+//                 client_id: 'PSrBaQYPCln4kqrTpE3pABs-XKOG8u9K9zNtLs10lns', // Replace with your Unsplash access key
+//                 // You can add more parameters here to customize the returned images
+//                 collections:'483251,DSpWkevZa94'
+//             }
+//         });
+//         return response.data.urls.regular; // or whichever image size you prefer
+//     } catch (error) {
+//         console.error("Error fetching image from Unsplash:", error);
+//     }
+// };
 
-
+//An asynchronous function that seeds the database with sample campgrounds.
 const seedDB = async () => {
+    //deletes all existing campgrounds in the collection.
     await Campground.deleteMany({});
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 50; i++) {
         const random1000 = Math.floor(Math.random() * 1000);
         const price = Math.floor(Math.random() * 20) + 10;
         const camp = new Campground({
@@ -57,7 +58,10 @@ const seedDB = async () => {
             description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam dolores vero perferendis laudantium, consequuntur voluptatibus nulla architecto, sit soluta esse iure sed labore ipsam a cum nihil atque molestiae deserunt!',
             price,
             geometry: {
-                coordinates:[80.6350358,7.2931208],
+                coordinates:[
+                    cities[random1000].longitude
+                    ,cities[random1000].latitude
+                ],
                 type:"Point"
             },
             images: [
@@ -77,6 +81,12 @@ const seedDB = async () => {
     }
 }
 
-seedDB().then(() => {
+//The seeding function is executed, and the MongoDB connection is closed upon completion.
+seedDB()
+  .then(() => {
+  mongoose.connection.close();
+  })
+  .catch((err) => {
+    console.error("Error during seeding:", err);
     mongoose.connection.close();
-})
+  });

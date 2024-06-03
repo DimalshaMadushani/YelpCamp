@@ -1,3 +1,5 @@
+//This review controller file defines two main functions: createReview and deleteReview. 
+//These functions handle the creation and deletion of reviews for campgrounds
 const Review = require('../models/review');
 const Campground = require('../models/campground');
 
