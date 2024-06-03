@@ -49,11 +49,7 @@ const dbUrl = process.env.DB_URL
 //27017: The default port number on which MongoDB listens for connections.
 // yelp-camp: The name of the database you want to connect to. If the database does not exist, MongoDB will create it for you when you insert the first document.
 // mongodb://127.0.0.1:27017/yelp-camp
-mongoose.connect(dbUrl, {
-    useNewUrlParser: true, // Use the new URL parser
-    useUnifiedTopology: true, // Use the new server discovery & monitoring engine
-    useFindAndModify: false // Use `findOneAndUpdate()` and `findOneAndDelete()` without the `findAndModify` functionality
-})
+mongoose.connect(dbUrl)
 .then(() => {
     console.log("Mongo Database connected !!")
 })
