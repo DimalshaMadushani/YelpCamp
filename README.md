@@ -1,8 +1,6 @@
-Here's a complete README file for your YelpCamp project on GitHub:
-
----
 
 # YelpCamp
+![YelpCamp Home Page](screenshots/home.png)
 
 YelpCamp is a full-stack web application for sharing and reviewing campgrounds. Users can create accounts, add campgrounds, leave reviews, and interact with other users. This project uses Node.js, Express, MongoDB, and various other technologies to create a dynamic and engaging experience.
 
